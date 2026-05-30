@@ -214,6 +214,7 @@ async def chat(
                     workspace_name=workspace_id,
                     session_name=options.session_id,
                     query=options.query,
+                    semantic_query=options.semantic_query,
                     observer=peer_id,
                     observed=options.target if options.target is not None else peer_id,
                     reasoning_level=options.reasoning_level,
@@ -226,6 +227,7 @@ async def chat(
         workspace_name=workspace_id,
         session_name=options.session_id,
         query=options.query,
+        semantic_query=options.semantic_query,
         observer=peer_id,
         # if target is given, that's the observed peer. otherwise, observer==observed
         # and it's answered from the omniscient Honcho perspective

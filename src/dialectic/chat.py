@@ -24,6 +24,8 @@ async def agentic_chat(
     observer: str,
     observed: str,
     reasoning_level: ReasoningLevel = "low",
+    *,
+    semantic_query: str | None = None,
 ) -> str:
     """
     Answer a query about a peer using the agentic dialectic.
@@ -75,7 +77,7 @@ async def agentic_chat(
         reasoning_level=reasoning_level,
     )
 
-    return await agent.answer(query)
+    return await agent.answer(query, semantic_query=semantic_query)
 
 
 async def agentic_chat_stream(
@@ -85,6 +87,8 @@ async def agentic_chat_stream(
     observer: str,
     observed: str,
     reasoning_level: ReasoningLevel = "low",
+    *,
+    semantic_query: str | None = None,
 ) -> AsyncIterator[str]:
     """
     Stream an answer to a query about a peer using the agentic dialectic.
@@ -136,5 +140,5 @@ async def agentic_chat_stream(
         reasoning_level=reasoning_level,
     )
 
-    async for chunk in agent.answer_stream(query):
+    async for chunk in agent.answer_stream(query, semantic_query=semantic_query):
         yield chunk

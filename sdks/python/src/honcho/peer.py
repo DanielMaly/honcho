@@ -226,6 +226,11 @@ class Peer(PeerBase, MetadataConfigMixin):
         self,
         query: str = Field(..., min_length=1, description="The natural language query"),
         *,
+        semantic_query: str | None = Field(
+            None,
+            min_length=1,
+            description="Optional query used for semantic retrieval. Defaults to query.",
+        ),
         target: str | PeerBase | None = None,
         session: str | SessionBase | None = None,
         reasoning_level: Literal["minimal", "low", "medium", "high", "max"]
@@ -258,6 +263,8 @@ class Peer(PeerBase, MetadataConfigMixin):
         resolved_session_id = resolve_id(session)
 
         body: dict[str, Any] = {"query": query, "stream": False}
+        if semantic_query is not None:
+            body["semantic_query"] = semantic_query
         if target_id:
             body["target"] = target_id
         if resolved_session_id:
@@ -279,6 +286,11 @@ class Peer(PeerBase, MetadataConfigMixin):
         self,
         query: str = Field(..., min_length=1, description="The natural language query"),
         *,
+        semantic_query: str | None = Field(
+            None,
+            min_length=1,
+            description="Optional query used for semantic retrieval. Defaults to query.",
+        ),
         target: str | PeerBase | None = None,
         session: str | SessionBase | None = None,
         reasoning_level: Literal["minimal", "low", "medium", "high", "max"]
@@ -311,6 +323,8 @@ class Peer(PeerBase, MetadataConfigMixin):
         resolved_session_id = resolve_id(session)
 
         body: dict[str, Any] = {"query": query, "stream": True}
+        if semantic_query is not None:
+            body["semantic_query"] = semantic_query
         if target_id:
             body["target"] = target_id
         if resolved_session_id:

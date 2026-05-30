@@ -230,7 +230,7 @@ class DialecticAgent:
             return None
 
     async def _prepare_query(
-        self, query: str
+        self, query: str, semantic_query: str | None = None
     ) -> tuple[Callable[[str, dict[str, Any]], Any], str, str | None, float]:
         """
         Prepare common state for answering a query.
@@ -267,8 +267,13 @@ class DialecticAgent:
             "blob",
         )
         accumulate_metric(task_name, "query", query, "blob")
+        retrieval_query = semantic_query or query
+        if semantic_query is not None:
+            accumulate_metric(task_name, "semantic_query", semantic_query, "blob")
 
-        prefetched_observations = await self._prefetch_relevant_observations(query)
+        prefetched_observations = await self._prefetch_relevant_observations(
+            retrieval_query
+        )
 
         if prefetched_observations:
             user_content = (
@@ -404,7 +409,7 @@ class DialecticAgent:
             )
         )
 
-    async def answer(self, query: str) -> str:
+    async def answer(self, query: str, semantic_query: str | None = None) -> str:
         """
         Answer a query about the peer using agentic tool calling.
 
@@ -419,7 +424,9 @@ class DialecticAgent:
         Returns:
             The synthesized answer string
         """
-        tool_executor, task_name, run_id, start_time = await self._prepare_query(query)
+        tool_executor, task_name, run_id, start_time = await self._prepare_query(
+            query, semantic_query=semantic_query
+        )
 
         # Get level-specific settings
         level_settings = settings.DIALECTIC.LEVELS[self.reasoning_level]
@@ -469,7 +476,9 @@ class DialecticAgent:
 
         return response.content
 
-    async def answer_stream(self, query: str) -> AsyncIterator[str]:
+    async def answer_stream(
+        self, query: str, semantic_query: str | None = None
+    ) -> AsyncIterator[str]:
         """
         Answer a query about the peer using agentic tool calling, streaming the response.
 
@@ -484,7 +493,9 @@ class DialecticAgent:
         Yields:
             Chunks of the response text as they are generated
         """
-        tool_executor, task_name, run_id, start_time = await self._prepare_query(query)
+        tool_executor, task_name, run_id, start_time = await self._prepare_query(
+            query, semantic_query=semantic_query
+        )
 
         # Get level-specific settings
         level_settings = settings.DIALECTIC.LEVELS[self.reasoning_level]

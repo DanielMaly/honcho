@@ -560,6 +560,18 @@ class DialecticOptions(BaseModel):
     query: Annotated[
         str, Field(min_length=1, max_length=10000, description="Dialectic API Prompt")
     ]
+    semantic_query: Annotated[
+        str | None,
+        Field(
+            default=None,
+            min_length=1,
+            max_length=10000,
+            description=(
+                "Optional query used for semantic retrieval. If omitted, `query` is "
+                "used for retrieval to preserve backwards compatibility."
+            ),
+        ),
+    ]
     stream: bool = False
     reasoning_level: ReasoningLevel = Field(
         default="low",
@@ -570,6 +582,11 @@ class DialecticOptions(BaseModel):
     @classmethod
     def sanitize_query(cls, v: str) -> str:
         return v.replace("\x00", "")
+
+    @field_validator("semantic_query", mode="after")
+    @classmethod
+    def sanitize_semantic_query(cls, v: str | None) -> str | None:
+        return v.replace("\x00", "") if v is not None else None
 
 
 class DialecticResponse(BaseModel):
